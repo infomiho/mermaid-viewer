@@ -6,6 +6,7 @@ import { EditorView, drawSelection, dropCursor, highlightActiveLine, keymap } fr
 import mermaid from 'mermaid';
 import { createPreviewRendering } from './previewRendering.js';
 import { createPreviewViewport } from './previewViewport.js';
+import { readSourceFromUrl, writeSourceToUrl } from './shareableSourceUrl.js';
 import './styles.css';
 
 const SOURCE_STORAGE_KEY = 'mermaid-source';
@@ -236,7 +237,7 @@ mermaid.initialize({
   },
 });
 
-const initialSource = localStorage.getItem(SOURCE_STORAGE_KEY) ?? sampleDiagram;
+const initialSource = readSourceFromUrl() ?? localStorage.getItem(SOURCE_STORAGE_KEY) ?? sampleDiagram;
 const editor = new EditorView({
   parent: editorHost,
   state: EditorState.create({
@@ -255,7 +256,9 @@ const editor = new EditorView({
       EditorView.updateListener.of((update) => {
         if (!update.docChanged) return;
 
-        localStorage.setItem(SOURCE_STORAGE_KEY, getEditorValue());
+        const source = getEditorValue();
+        localStorage.setItem(SOURCE_STORAGE_KEY, source);
+        writeSourceToUrl(source);
         scheduleRender();
       }),
       keymap.of([

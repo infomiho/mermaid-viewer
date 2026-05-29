@@ -15,6 +15,7 @@
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.43.0",
     "@lezer/highlight": "^1.2.3",
+    "lz-string": "^1.5.0",
     "mermaid": "^11.15.0"
   },
   "devDependencies": {

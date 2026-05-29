@@ -13,3 +13,7 @@ The interactive area that displays the rendered Mermaid diagram and owns fit, zo
 ### Preview rendering
 
 The Mermaid viewer behaviour that turns Mermaid source into preview output, including render errors and rendered SVG state.
+
+### Shareable source URL
+
+The URL hash that stores compressed Mermaid source so a diagram can be shared by copying the browser URL.
