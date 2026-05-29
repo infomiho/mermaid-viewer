@@ -1,0 +1,23 @@
+{
+  "name": "mermaid-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "deploy": "npm run build && buzz deploy dist --subdomain mermaid",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.10.3",
+    "@codemirror/language": "^6.12.3",
+    "@codemirror/state": "^6.6.0",
+    "@codemirror/view": "^6.43.0",
+    "@lezer/highlight": "^1.2.3",
+    "mermaid": "^11.15.0"
+  },
+  "devDependencies": {
+    "vite": "^8.0.14"
+  }
+}

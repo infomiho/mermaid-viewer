@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A minimal static Mermaid diagram viewer for editing and previewing diagrams."
+    />
+    <title>Mermaid Viewer</title>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Static tool</p>
+          <h1 id="page-title">Mermaid Viewer</h1>
+        </div>
+        <div class="status" id="status" role="status" aria-live="polite">Ready</div>
+      </header>
+
+      <section class="workspace" aria-label="Mermaid editor and preview">
+        <section class="panel editor-panel" aria-labelledby="editor-title">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">Input</p>
+              <h2 id="editor-title">Mermaid code</h2>
+            </div>
+            <div class="history-nav" aria-label="History navigation">
+              <button class="ghost-button compact-button" id="history-back" type="button">Back</button>
+              <button class="ghost-button compact-button" id="history-forward" type="button">Forward</button>
+              <span class="history-count" id="history-count">0/0</span>
+            </div>
+          </div>
+          <div class="editor-wrap" id="editor"></div>
+          <div class="history-panel" aria-labelledby="history-title">
+            <div class="history-header">
+              <h3 id="history-title">History</h3>
+              <button class="ghost-button compact-button" id="clear-history" type="button">Clear</button>
+            </div>
+            <ol class="history-list" id="history-list" aria-label="Rendered diagram history"></ol>
+          </div>
+        </section>
+
+        <section class="panel preview-panel" id="preview-panel" aria-labelledby="preview-title">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">Output</p>
+              <h2 id="preview-title">Preview</h2>
+            </div>
+            <div class="button-row preview-tools" aria-label="Preview controls">
+              <button class="ghost-button compact-button" id="zoom-out" type="button" aria-label="Zoom out">-</button>
+              <button class="ghost-button compact-button zoom-readout" id="zoom-reset" type="button">100%</button>
+              <button class="ghost-button compact-button" id="zoom-in" type="button" aria-label="Zoom in">+</button>
+              <button class="ghost-button" id="fullscreen-button" type="button">Fullscreen</button>
+              <button class="ghost-button" id="download-button" type="button">Download SVG</button>
+              <button class="primary-button" id="save-button" type="button">Save</button>
+            </div>
+          </div>
+          <div class="preview-frame" id="preview-frame" aria-label="Rendered Mermaid preview">
+            <div class="preview-canvas" id="preview-canvas">
+              <div class="diagram-target" id="preview"></div>
+            </div>
+          </div>
+          <pre class="error-box" id="error" hidden></pre>
+        </section>
+      </section>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
