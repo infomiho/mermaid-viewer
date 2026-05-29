@@ -9,9 +9,6 @@ import { createPreviewViewport } from './previewViewport.js';
 import './styles.css';
 
 const SOURCE_STORAGE_KEY = 'mermaid-source';
-const HISTORY_STORAGE_KEY = 'mermaid-history';
-const HISTORY_INDEX_STORAGE_KEY = 'mermaid-history-index';
-const MAX_HISTORY = 20;
 const RENDER_DELAY_MS = 350;
 
 const DIAGRAM_TYPES = new Set([
@@ -158,21 +155,12 @@ const previewCanvas = document.querySelector('#preview-canvas');
 const preview = document.querySelector('#preview');
 const status = document.querySelector('#status');
 const error = document.querySelector('#error');
-const saveButton = document.querySelector('#save-button');
 const downloadButton = document.querySelector('#download-button');
 const zoomOutButton = document.querySelector('#zoom-out');
 const zoomResetButton = document.querySelector('#zoom-reset');
 const zoomInButton = document.querySelector('#zoom-in');
 const fullscreenButton = document.querySelector('#fullscreen-button');
-const historyBackButton = document.querySelector('#history-back');
-const historyForwardButton = document.querySelector('#history-forward');
-const historyCount = document.querySelector('#history-count');
-const historyList = document.querySelector('#history-list');
-const clearHistoryButton = document.querySelector('#clear-history');
 
-let history = readHistory();
-let historyIndex = readHistoryIndex(history.length);
-let isSettingEditorValue = false;
 let scheduledRenderId = null;
 
 downloadButton.disabled = true;
@@ -248,7 +236,7 @@ mermaid.initialize({
   },
 });
 
-const initialSource = localStorage.getItem(SOURCE_STORAGE_KEY) ?? history[historyIndex] ?? sampleDiagram;
+const initialSource = localStorage.getItem(SOURCE_STORAGE_KEY) ?? sampleDiagram;
 const editor = new EditorView({
   parent: editorHost,
   state: EditorState.create({
@@ -265,7 +253,7 @@ const editor = new EditorView({
       editorTheme,
       EditorView.contentAttributes.of({ 'aria-label': 'Mermaid diagram source' }),
       EditorView.updateListener.of((update) => {
-        if (!update.docChanged || isSettingEditorValue) return;
+        if (!update.docChanged) return;
 
         localStorage.setItem(SOURCE_STORAGE_KEY, getEditorValue());
         scheduleRender();
@@ -275,7 +263,7 @@ const editor = new EditorView({
           key: 'Mod-s',
           preventDefault: true,
           run() {
-            renderCurrentSource({ save: true });
+            renderCurrentSource();
             return true;
           },
         },
@@ -287,11 +275,7 @@ const editor = new EditorView({
   }),
 });
 
-updateHistoryControls();
-updateSaveStatus(initialSource.trim());
 renderCurrentSource();
-
-saveButton.addEventListener('click', () => renderCurrentSource({ save: true }));
 
 downloadButton.addEventListener('click', () => {
   previewRendering.downloadSvg();
@@ -317,19 +301,8 @@ fullscreenButton.addEventListener('click', async () => {
 
 document.addEventListener('fullscreenchange', updateFullscreenButton);
 
-historyBackButton.addEventListener('click', () => loadHistory(historyIndex - 1));
-historyForwardButton.addEventListener('click', () => loadHistory(historyIndex + 1));
-
-clearHistoryButton.addEventListener('click', () => {
-  history = [];
-  historyIndex = -1;
-  saveHistory();
-  updateHistoryControls();
-  updateSaveStatus(getEditorValue().trim());
-});
-
 function scheduleRender() {
-  status.textContent = 'Unsaved';
+  status.textContent = 'Editing';
   previewRendering.invalidatePendingRender();
   clearScheduledRender();
 
@@ -339,9 +312,9 @@ function scheduleRender() {
   }, RENDER_DELAY_MS);
 }
 
-async function renderCurrentSource({ save = false } = {}) {
+async function renderCurrentSource() {
   clearScheduledRender();
-  saveButton.disabled = true;
+  status.textContent = 'Rendering';
 
   const result = await previewRendering.render(getEditorValue());
 
@@ -349,7 +322,6 @@ async function renderCurrentSource({ save = false } = {}) {
     return;
   }
 
-  saveButton.disabled = false;
   downloadButton.disabled = !previewRendering.hasSvg();
 
   if (result.state === 'empty') {
@@ -362,109 +334,7 @@ async function renderCurrentSource({ save = false } = {}) {
     return;
   }
 
-  if (save) {
-    saveToHistory(result.diagram);
-    status.textContent = 'Saved';
-  } else {
-    updateSaveStatus(result.diagram);
-  }
-}
-
-function saveToHistory(diagram) {
-  history = history.filter((entry) => entry !== diagram);
-  history.push(diagram);
-
-  if (history.length > MAX_HISTORY) {
-    history = history.slice(history.length - MAX_HISTORY);
-  }
-
-  historyIndex = history.length - 1;
-  saveHistory();
-  updateHistoryControls();
-}
-
-function loadHistory(nextIndex) {
-  if (nextIndex < 0 || nextIndex >= history.length) return;
-
-  historyIndex = nextIndex;
-  setEditorValue(history[historyIndex]);
-  localStorage.setItem(SOURCE_STORAGE_KEY, getEditorValue());
-  saveHistory();
-  updateHistoryControls();
-  renderCurrentSource();
-  editor.focus();
-}
-
-function updateHistoryControls() {
-  historyBackButton.disabled = historyIndex <= 0;
-  historyForwardButton.disabled = historyIndex < 0 || historyIndex >= history.length - 1;
-  clearHistoryButton.disabled = history.length === 0;
-  historyCount.textContent = history.length > 0 ? `${historyIndex + 1}/${history.length}` : '0/0';
-
-  if (history.length === 0) {
-    historyList.replaceChildren(createEmptyHistoryItem());
-    return;
-  }
-
-  historyList.replaceChildren(...[...history].reverse().map(createHistoryItem));
-}
-
-function createEmptyHistoryItem() {
-  const item = document.createElement('li');
-  item.className = 'history-empty';
-  item.textContent = 'Click Save to keep a diagram here.';
-  return item;
-}
-
-function createHistoryItem(diagram, reversedIndex) {
-  const index = history.length - 1 - reversedIndex;
-  const item = document.createElement('li');
-  const button = document.createElement('button');
-  const number = document.createElement('span');
-  const label = document.createElement('span');
-
-  button.type = 'button';
-  button.className = 'history-item';
-  button.disabled = index === historyIndex;
-  button.addEventListener('click', () => loadHistory(index));
-
-  number.className = 'history-number';
-  number.textContent = String(index + 1).padStart(2, '0');
-
-  label.className = 'history-label';
-  label.textContent = getHistoryLabel(diagram);
-
-  button.append(number, label);
-  item.append(button);
-  return item;
-}
-
-function readHistory() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '[]');
-    return Array.isArray(parsed) ? parsed.filter((entry) => typeof entry === 'string') : [];
-  } catch {
-    return [];
-  }
-}
-
-function readHistoryIndex(length) {
-  const storedIndex = Number(localStorage.getItem(HISTORY_INDEX_STORAGE_KEY));
-
-  if (Number.isInteger(storedIndex) && storedIndex >= 0 && storedIndex < length) {
-    return storedIndex;
-  }
-
-  return length - 1;
-}
-
-function saveHistory() {
-  localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
-  localStorage.setItem(HISTORY_INDEX_STORAGE_KEY, String(historyIndex));
-}
-
-function updateSaveStatus(diagram) {
-  status.textContent = history.includes(diagram) ? 'Saved' : 'Unsaved';
+  status.textContent = 'Rendered';
 }
 
 function getEditorValue() {
@@ -473,22 +343,6 @@ function getEditorValue() {
 
 function getRenderedDiagram() {
   return preview.querySelector('svg');
-}
-
-function setEditorValue(value) {
-  isSettingEditorValue = true;
-
-  try {
-    editor.dispatch({
-      changes: { from: 0, to: editor.state.doc.length, insert: value },
-    });
-  } finally {
-    isSettingEditorValue = false;
-  }
-}
-
-function getHistoryLabel(diagram) {
-  return diagram.split('\n').find((line) => line.trim())?.trim().slice(0, 56) || 'Untitled diagram';
 }
 
 function clearScheduledRender() {
