@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#d8d8d2" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="#f7f7f4"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <rect x="55" y="44" width="1090" height="542" fill="#fff" stroke="#151515" stroke-width="2"/>
+  <path d="M55 140h1090M506 140v446" fill="none" stroke="#151515" stroke-width="2"/>
+
+  <text x="87" y="79" fill="#0057b8" font-family="Menlo, Consolas, monospace" font-size="15" font-weight="700" letter-spacing="2">STATIC TOOL</text>
+  <text x="87" y="119" fill="#0f0f0f" font-family="Helvetica Neue, Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="-1.5">Mermaid Viewer</text>
+  <rect x="1010" y="78" width="7" height="32" fill="#0057b8"/>
+  <text x="1030" y="100" fill="#0f0f0f" font-family="Menlo, Consolas, monospace" font-size="15" font-weight="700" letter-spacing="1">READY</text>
+
+  <text x="87" y="180" fill="#0057b8" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="700" letter-spacing="2">INPUT</text>
+  <text x="87" y="211" fill="#0f0f0f" font-family="Helvetica Neue, Arial, sans-serif" font-size="22" font-weight="700">Mermaid code</text>
+
+  <g font-family="Menlo, Consolas, monospace" font-size="18">
+    <text x="87" y="264" fill="#0057b8" font-weight="700">flowchart LR</text>
+    <text x="87" y="304" fill="#0f0f0f">  idea[Paste Mermaid]</text>
+    <text x="87" y="344" fill="#0f0f0f">  idea --&gt; render{Valid syntax?}</text>
+    <text x="87" y="384" fill="#0f0f0f">  render -- yes --&gt; preview</text>
+    <text x="87" y="424" fill="#0f0f0f">  preview[Preview SVG]</text>
+    <text x="87" y="464" fill="#0f0f0f">  preview --&gt; share[Share URL]</text>
+  </g>
+  <rect x="55" y="326" width="451" height="40" fill="#0057b8" opacity="0.055"/>
+
+  <text x="542" y="180" fill="#0057b8" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="700" letter-spacing="2">OUTPUT</text>
+  <text x="542" y="211" fill="#0f0f0f" font-family="Helvetica Neue, Arial, sans-serif" font-size="22" font-weight="700">Live preview</text>
+
+  <g fill="#fff" stroke="#151515" stroke-width="2">
+    <rect x="550" y="274" width="140" height="64" rx="4"/>
+    <path d="M805 262l85 44-85 44-85-44z" stroke="#0057b8"/>
+    <rect x="920" y="274" width="164" height="64" rx="4"/>
+    <rect x="738" y="442" width="192" height="64" rx="4"/>
+  </g>
+  <g fill="#0f0f0f" font-family="Menlo, Consolas, monospace" font-size="15" text-anchor="middle">
+    <text x="620" y="312">Paste Mermaid</text>
+    <text x="805" y="311">Valid syntax?</text>
+    <text x="1002" y="312">Preview SVG</text>
+    <text x="834" y="480">Share URL</text>
+  </g>
+  <g fill="none" stroke="#151515" stroke-width="2">
+    <path d="M690 306h24"/>
+    <path d="m707 300 8 6-8 6"/>
+    <path d="M890 306h24"/>
+    <path d="m907 300 8 6-8 6"/>
+    <path d="M1002 338v136H936"/>
+    <path d="m943 468-8 6 8 6"/>
+  </g>
+  <text x="895" y="292" fill="#666660" font-family="Menlo, Consolas, monospace" font-size="13">yes</text>
+
+  <rect x="542" y="535" width="337" height="28" fill="#0f0f0f"/>
+  <text x="558" y="554" fill="#fff" font-family="Menlo, Consolas, monospace" font-size="12" font-weight="700" letter-spacing="1">EDIT · PREVIEW · SHARE · EXPORT</text>
+</svg>
