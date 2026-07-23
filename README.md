@@ -1,5 +1,7 @@
 # Mermaid Viewer
 
+![Mermaid Viewer](./public/social-card-v3.png)
+
 Minimal static Mermaid previewer.
 
 ```bash
